@@ -2,6 +2,8 @@
 
 Thank you for taking an interest. Anupravaha-I is primarily an educational solver, so contributions that **clarify code, fix bugs, improve tutorials, or extend documentation** are especially welcome.
 
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md) — by participating you agree to abide by its terms. For **security-sensitive issues** see [`SECURITY.md`](SECURITY.md).
+
 ## Quick start
 
 ```bash
@@ -45,20 +47,58 @@ Last verified clean build: **2026-05-13** — `cmake ..` + `make -j4` produces `
 - Changes that drop support for the canonical tutorials without a clear reason
 - Adding heavy external dependencies — Anupravaha-I deliberately stays close to plain C + CMake + CGNS
 
+## Tests
+
+We aim to follow the standard for mature CFD codes: **every bug fix gets a regression test that fails before the fix and passes after**; **every new feature ships with at least one demonstration case**. See [`tests/README.md`](tests/README.md) for the layout and how to add a case.
+
+For bug-fix MRs, please include:
+
+- A `.cgns` mesh (or a pointer to an existing tutorial mesh) that reproduces the bug
+- A recorded `.inp` input file (see [`tests/README.md`](tests/README.md))
+- A short note in the MR description explaining what the failure mode was *before* your fix and what it is *after*
+
+CI builds the code on every MR. Once at least one regression case is committed, CI additionally runs it as a smoke test. Submissions that don't build will be rejected automatically.
+
+If you genuinely can't write a test for your change (e.g., a typo fix in a comment, or a build-system tweak), say so explicitly in the MR description and a reviewer may waive the requirement.
+
+## Sign your work (Developer Certificate of Origin)
+
+Anupravaha-I uses the [Developer Certificate of Origin](https://developercertificate.org/) to keep the chain of contribution legally clean. **Every commit must carry a `Signed-off-by:` line:**
+
+```bash
+git commit -s -m "Fix off-by-one in APKFindMaxDiff"
+```
+
+This is *not* a copyright assignment — it's a one-line statement that you have the right to contribute the code under the project's GPL-3.0 license (the full DCO text is at the link above; please read it once).
+
+If you forget, amend the last commit with `git commit --amend -s`, or sign off a batch with `git rebase --signoff <upstream>`. The trailer ends up looking like:
+
+```
+Fix off-by-one in APKFindMaxDiff
+
+Signed-off-by: Jane Doe <jane@example.com>
+```
+
+CI will reject MRs whose commits aren't all signed off.
+
 ## Style
 
-The existing C code uses K&R-style braces, 4-space indentation, and `APK`-prefixed function names. Please match the surrounding code in any file you touch rather than imposing a new style.
+The existing C code uses K&R-style braces, 4-space indentation, and `APK`-prefixed function names. Please match the surrounding code in any file you touch rather than imposing a new style. We deliberately do **not** auto-format the repository — large mechanical reformatting MRs make review impossible and hide real changes. Reformat only the lines you're already touching, never adjacent code.
 
 ## Merge requests
 
+A merge request template is auto-loaded when you open a new MR — please fill it in. Summary of expectations:
+
 - One topic per MR — easier to review and revert if needed
+- **All commits signed off** (`git commit -s`) — see [DCO](#sign-your-work-developer-certificate-of-origin)
+- A test added or updated, **or** an explicit note explaining why none is needed
 - Reference any related issue with `Closes #N`
 - Describe what you changed, why, and what you tested
-- Expect review before merge; we may ask for changes
+- Expect **1 maintainer approval** before merge; we may ask for changes
 
 ## Reporting issues
 
-Use the GitLab Issues tab. Helpful issue reports include:
+Use the GitLab Issues tab — bug and feature templates are auto-loaded when you click *New issue*. Helpful bug reports include:
 
 - Anupravaha version / commit
 - OS, compiler, CGNS version
