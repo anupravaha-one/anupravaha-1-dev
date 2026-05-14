@@ -1,6 +1,6 @@
 ## Summary
 
-<!-- One paragraph: what does this MR do, and why? -->
+<!-- One paragraph: what does this PR do, and why? -->
 
 ## Type of change
 
@@ -14,7 +14,7 @@
 ## Checklist
 
 - [ ] I have read [`CONTRIBUTING.md`](../CONTRIBUTING.md)
-- [ ] All commits in this MR are **signed off** (`git commit -s`) — Developer Certificate of Origin
+- [ ] All commits in this PR are **signed off** (`git commit -s`) — Developer Certificate of Origin
 - [ ] I have added or updated tests covering this change, **or** explained below why none are needed
 - [ ] My code follows the project's style (`CONTRIBUTING.md` § Style)
 - [ ] I have run `cmake .. && make -j4` locally and the build is clean

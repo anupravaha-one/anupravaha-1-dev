@@ -1,0 +1,66 @@
+name: Build
+
+# Triggers on every pull request and every push to main.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build on Ubuntu 22.04
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            build-essential cmake gfortran libcgns-dev libhdf5-dev
+
+      - name: Configure (cmake)
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+
+      - name: Build (make -j)
+        working-directory: build
+        run: make -j$(nproc)
+
+      - name: Sanity check the binary
+        working-directory: build
+        run: |
+          test -x bin/Anupravaha_1
+          test -f bin/libAPK.so
+          ./bin/Anupravaha_1 < /dev/null || true   # prints usage message and exits 0
+
+      - name: Upload build artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: anupravaha-${{ github.sha }}
+          path: |
+            build/bin/Anupravaha_1
+            build/bin/libAPK.so
+          retention-days: 14
+
+  # Placeholder regression-test job — activate once tests/<case>/ ships an .inp.
+  #
+  # smoke-test:
+  #   needs: build
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: anupravaha-${{ github.sha }}
+  #         path: build/bin
+  #     - run: chmod +x build/bin/Anupravaha_1
+  #     - name: Lid-driven cavity smoke test
+  #       working-directory: tests/lid-driven-cavity
+  #       run: |
+  #         ../../build/bin/Anupravaha_1 Lid_Driven_Square_Cavity_Mesh.cgns sol.cgns < lid-driven-cavity.inp
+  #         python3 ../compare.py sol.cgns reference/

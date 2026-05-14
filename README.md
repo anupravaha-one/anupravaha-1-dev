@@ -1,7 +1,7 @@
 # Anupravaha-I
 
-[![pipeline status](https://gitlab.com/anupravahaone/anupravaha_1_dev/badges/main/pipeline.svg)](https://gitlab.com/anupravahaone/anupravaha_1_dev/-/commits/main)
-[![contributors](https://img.shields.io/gitlab/contributors/anupravahaone/anupravaha_1_dev)](https://gitlab.com/anupravahaone/anupravaha_1_dev/-/graphs/main)
+[![CI](https://github.com/anupravaha-one/anupravaha-1-dev/actions/workflows/build.yml/badge.svg)](https://github.com/anupravaha-one/anupravaha-1-dev/actions/workflows/build.yml)
+[![contributors](https://img.shields.io/github/contributors/anupravaha-one/anupravaha-1-dev)](https://github.com/anupravaha-one/anupravaha-1-dev/graphs/contributors)
 [![license: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](LICENSE)
 
 Educational, structured multi-block, finite-volume Navier–Stokes solver developed at the Indian Institute of Technology Kanpur. Anupravaha-I covers incompressible and weakly-compressible flow, conjugate heat transfer, turbulence (k–ε, RNG k–ε, k–ω, SST), natural and mixed convection, and liquid-metal MHD.
@@ -53,8 +53,8 @@ Released under the GNU General Public License v3.0 — see [`LICENSE`](LICENSE).
 
 ## Citation
 
-If you use Anupravaha in academic work, please cite using the metadata in [`CITATION.cff`](CITATION.cff). GitLab renders this as a "Cite this repository" button on the repo home page.
+If you use Anupravaha in academic work, please cite using the metadata in [`CITATION.cff`](CITATION.cff). GitHub renders this as a "Cite this repository" button on the repo home page.
 
 ## Contributing
 
-Issues and merge requests are welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Issues and pull requests are welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md).
