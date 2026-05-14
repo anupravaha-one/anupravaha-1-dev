@@ -6,13 +6,13 @@ Thank you for taking an interest. Anupravaha-I is primarily an educational solve
 
 ```bash
 # Fork the project on GitLab (top-right "Fork" button), then:
-git clone https://gitlab.com/<your-username>/Anupravaha_1.git
-cd Anupravaha_1/src/AnuPravahaStructured
+git clone https://gitlab.com/<your-username>/anupravaha_1_dev.git
+cd anupravaha_1_dev
 mkdir build && cd build
-cmake .. && make -j
+cmake .. && make -j4
 ```
 
-Branch off `main`, commit your change, push to your fork, and open a Merge Request against `vatsalyasharma/Anupravaha_1`.
+Branch off `main`, commit your change, push to your fork, and open a Merge Request against `anupravahaone/anupravaha_1_dev`.
 
 ## Verified build environment
 
@@ -76,5 +76,5 @@ Before flipping the project to public visibility on GitLab:
 - [ ] Settings → Merge requests → Approvals required: **≥ 1**, "Prevent approval by author" enabled
 - [ ] Settings → Account → Two-Factor Authentication enabled on every Maintainer account
 - [ ] Settings → Repository → Repository mirroring: configure a backup mirror
-- [ ] Optional: add a `CODEOWNERS` file to require specific reviewers for `src/Solver/` etc.
+- [ ] Optional: add a `CODEOWNERS` file to require specific reviewers for `Solver/` etc.
 - [ ] Optional: add a CI job that builds the C code on every MR, so broken changes can't merge
