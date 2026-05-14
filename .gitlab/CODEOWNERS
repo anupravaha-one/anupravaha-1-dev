@@ -1,0 +1,32 @@
+# Anupravaha-I CODEOWNERS
+#
+# Lines below are matched against changed paths in a Merge Request.
+# For each match, GitLab auto-requests review from the listed owner(s).
+# See https://docs.gitlab.com/ee/user/project/codeowners/
+#
+# Until there are multiple maintainers, the same owner reviews everything.
+
+# Catch-all
+*                       @vatsalyasharma
+
+# Solver core — protected hot paths
+/Solver/                @vatsalyasharma
+/Common/                @vatsalyasharma
+/Bc/                    @vatsalyasharma
+/Geometry/              @vatsalyasharma
+/Initialize/            @vatsalyasharma
+/Io/                    @vatsalyasharma
+/User/                  @vatsalyasharma
+/Cgns/                  @vatsalyasharma
+
+# Build system + CI
+/CMakeLists.txt         @vatsalyasharma
+/.gitlab-ci.yml         @vatsalyasharma
+/.gitlab/               @vatsalyasharma
+
+# Policy documents — changes here should be reviewed carefully
+/LICENSE                @vatsalyasharma
+/CONTRIBUTING.md        @vatsalyasharma
+/CODE_OF_CONDUCT.md     @vatsalyasharma
+/SECURITY.md            @vatsalyasharma
+/CITATION.cff           @vatsalyasharma
