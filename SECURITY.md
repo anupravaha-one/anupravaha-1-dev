@@ -8,11 +8,11 @@ The `main` branch is actively maintained. Tagged releases (`v2018` and any futur
 
 **Please do not open a public issue for security-sensitive bugs.** Use one of the channels below instead:
 
-1. **Confidential issue (preferred):** open a new issue at
-   <https://gitlab.com/anupravahaone/anupravaha_1_dev/-/issues/new?issue%5Bconfidential%5D=true>
-   and check the "This issue is confidential" box. Only project Maintainers will see it.
+1. **Private security advisory (preferred):** open a new draft advisory at
+   <https://github.com/anupravaha-one/anupravaha-1-dev/security/advisories/new>.
+   Only project maintainers see the report; GitHub coordinates the disclosure workflow, including CVE assignment if applicable, and lets us cut a fix in a private fork before publishing.
 
-2. **Email fallback:** if for any reason confidential issues are unavailable to you, write to **me12m1030@gmail.com** with `[anupravaha security]` in the subject line.
+2. **Email fallback:** if for any reason the advisory form is unavailable to you, write to **me12m1030@gmail.com** with `[anupravaha security]` in the subject line.
 
 We aim to:
 

@@ -1,6 +1,14 @@
+---
+name: Bug report
+about: Report a bug to help improve Anupravaha-I
+title: '[BUG] '
+labels: bug
+assignees: ''
+---
+
 <!--
 Thanks for reporting a bug. Fill in as much of the template as you can.
-For SECURITY-sensitive bugs, please use a confidential issue or follow SECURITY.md instead.
+For SECURITY-sensitive bugs, please open a private Security Advisory instead — see SECURITY.md.
 -->
 
 ## Summary
@@ -38,5 +46,3 @@ For SECURITY-sensitive bugs, please use a confidential issue or follow SECURITY.
 - Console log
 - Screenshots if relevant
 -->
-
-/label ~bug

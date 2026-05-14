@@ -16,7 +16,7 @@ authors:
 version: "2018"
 date-released: "2019-05-28"
 license: GPL-3.0-only
-repository-code: "https://gitlab.com/anupravahaone/anupravaha_1_dev"
+repository-code: "https://github.com/anupravaha-one/anupravaha-1-dev"
 url: "https://vatsalyasharma.gitlab.io/Anupravaha_1"
 keywords:
   - computational-fluid-dynamics

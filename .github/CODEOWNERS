@@ -1,10 +1,11 @@
 # Anupravaha-I CODEOWNERS
 #
-# Lines below are matched against changed paths in a Merge Request.
-# For each match, GitLab auto-requests review from the listed owner(s).
-# See https://docs.gitlab.com/ee/user/project/codeowners/
+# Lines below are matched against changed paths in a pull request.
+# For each match, GitHub auto-requests review from the listed owner(s).
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 #
 # Until there are multiple maintainers, the same owner reviews everything.
+# NOTE: update @vatsalyasharma below to your actual GitHub username if it differs.
 
 # Catch-all
 *                       @vatsalyasharma
@@ -21,8 +22,8 @@
 
 # Build system + CI
 /CMakeLists.txt         @vatsalyasharma
-/.gitlab-ci.yml         @vatsalyasharma
-/.gitlab/               @vatsalyasharma
+/.github/workflows/     @vatsalyasharma
+/.github/               @vatsalyasharma
 
 # Policy documents — changes here should be reviewed carefully
 /LICENSE                @vatsalyasharma

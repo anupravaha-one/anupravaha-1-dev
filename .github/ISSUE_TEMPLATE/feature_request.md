@@ -1,3 +1,11 @@
+---
+name: Feature request
+about: Propose a new feature, model, or capability
+title: '[FEATURE] '
+labels: enhancement
+assignees: ''
+---
+
 <!--
 Thanks for proposing a feature. The maintainers welcome discussion before code is written
 — please open the issue, talk through the approach, and only then start work.
@@ -20,9 +28,7 @@ If this touches the numerics, cite the reference (paper / textbook / NPTEL cours
 
 ## Alternatives considered
 
-## Are you willing to submit a merge request?
+## Are you willing to submit a pull request?
 
 - [ ] Yes — I'd like to implement this
 - [ ] No — opening this for discussion / for someone else to pick up
-
-/label ~feature
