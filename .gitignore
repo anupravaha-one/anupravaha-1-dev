@@ -1,0 +1,45 @@
+# CMake build artefacts (out-of-source builds go in build/)
+build/
+cmake-build*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+APKConfigure.h
+
+# Compiled objects + binaries
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dll
+*.exe
+*.lib
+
+# Solver runtime output (created next to the executable when the solver runs)
+SOLUTIONS/
+GRIDS/
+Settings/**
+# But ship the canonical defaults under bin/Settings/
+!Settings/convergenceCriteria.dat
+!Settings/omega.dat
+
+# Block legacy CVS metadata in case it gets resurrected from a backup
+CVS/
+
+# Editor cruft
+*.swp
+.DS_Store
+.vscode/
+.idea/
+
+# Local env
+.env
+.venv/
+venv/
+
+# Stale config logs from the vendored CGNS source
+Cgns/config.log
+Cgns/make.LINUX
+Cgns/make.LINUX64

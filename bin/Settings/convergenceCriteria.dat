@@ -1,0 +1,17 @@
+1e-8
+1e-8
+1e-8
+1e-4
+1e-8
+1e-8
+1e-8
+1e-8
+1e-8
+1e-8
+1e-8
+1e-8
+
+1. u,v,w,umass,vmass,wmass convergence criterion both in iterative loop and steady state convergence/All MPFV vairables
+2. Convergence criterion for Temperature/enthalpy,LMMHD variables,Flow_Potential,Droplet temperature for Droplet flows.
+3. From 3-12, the convergence criterion corresponds to 10 scalars.
+

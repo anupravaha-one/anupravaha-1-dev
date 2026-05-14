@@ -1,0 +1,51 @@
+	To Do List 
+	----------
+
+01. Possible bug in Common/APKFindmaXDiff.c
+    Probably missing brackets - one such line - no 95
+	comparY=Nu/CordY*CordY;
+
+    Probably developer meant to write
+	comparY=Nu/(CordY*CordY);
+
+02. bin/Settings/Inputparameters file seems to have been used for sometime - Can it be of any help to simplify process of specifying inputs?
+
+03. "Open Summary File?" - option is switched off - Do not know the purpose of opening summary file using gvim editor
+
+04. Make all scanf with do....while to keep it consistent and better
+
+05. BC input from file 1/0 APKInputBoundarycondition.c - what is choice = 20? confusing - is yes==1 or yes==0???
+
+
+	var2=fopen("Settings/coefficients.dat","a");
+	var3=fopen("Settings/ProgramReadInputValues.dat","a");
+        fprintf(var2,"%d\n",j);
+        fprintf(var3,"%d \t \n\n",c);
+        fclose(var2);
+        fclose(var3);
+
+06. Semi-coubled solver - residual limit to stop computation seems to be very low
+
+07. Make all fopen to test and report errors
+
+08. There seems to be some problem in Zone interface - Boundary face.  DPW6_Coarse grid can be read if we extend all the splits. Otherwise it gives "zero while calculating Beta" error
+	Right now AnuPravaha seems to handle cases that defines booundary conditions for entire face of the block - that means let say one face of a block share that face with two different
+	blocks, the program may run into problem
+
+09. Initialize value for U V W - for hundreds of blocks entering initialization value - changed to entire domain - better ask first whether to initialize block by block or for entire domain - if different domains (fluid/solid) exists, do accordingly
+
+10. Check the system command in Windows
+
+11. If there is any special characrter in the paths, Anupravaha may fail
+
+12. Particle monitor - gave core dump
+
+13. Need to correct bug - Enter BC function index from file [Yes 1/No 0] - entering 1 or number???
+
+14. Check necessity of file reading readu4bc.dat.....
+
+15. Check the messages for inputs... if there is only one zone - no need to ask option ... do you want to enter zone by zone or entire zone.....
+
+16. printu4bc - needs inputs from scanf - and core dumbs - commented from semicoupledsolve subroutine - check
+
+17. If k & epsilon are zero, mu = nan by eq. So, if the user initialize k=epsilon=0, give a warning

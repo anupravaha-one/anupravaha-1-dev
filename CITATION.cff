@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use Anupravaha-I in your work, please cite it as below."
+title: "Anupravaha-I: A structured multi-block finite-volume Navier–Stokes solver"
+abstract: >-
+  Anupravaha-I is an educational, structured multi-block, finite-volume
+  Navier–Stokes solver for incompressible and weakly-compressible flow,
+  conjugate heat transfer, turbulence, natural and mixed convection, and
+  liquid-metal MHD. Developed at the Indian Institute of Technology
+  Kanpur and used in graduate-level CFD instruction.
+type: software
+authors:
+  - family-names: Eswaran
+    given-names: Vinayak
+    affiliation: Indian Institute of Technology Kanpur
+    orcid: "https://orcid.org/XXXX-XXXX-XXXX-XXXX"
+version: "2018"
+date-released: "2019-05-28"
+license: GPL-3.0-only
+repository-code: "https://gitlab.com/vatsalyasharma/Anupravaha_1"
+url: "https://vatsalyasharma.gitlab.io/Anupravaha_1"
+keywords:
+  - computational-fluid-dynamics
+  - finite-volume-method
+  - navier-stokes
+  - structured-grid
+  - multiblock
+  - cgns
+  - turbulence
+  - liquid-metal-mhd
+  - conjugate-heat-transfer
+  - cfd

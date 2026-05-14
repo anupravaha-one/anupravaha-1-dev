@@ -1,0 +1,29 @@
+0.6
+1.0
+1.0
+1.8
+
+0.7
+0.7
+0.7
+0.7
+0.7
+0.7
+0.7
+0.7
+0.7
+0.7
+
+1. u,v,w,umass,vmass,wmass relaxation factors.  i.e., Momentum relaxation factors
+2. Pressure relaxtion factor
+3. Energy relaxation factor for conv.diffusion equation.
+4. Relaxation factor for any diffusive equation without unsteady,convection terms.
+
+First four parameters are general and may not require modifications
+
+Next four parameters which corresponds to other variables apart from momentum and energy may need modification
+according to the type of the problem and the variable solved.
+
+5. All other scalars/variables depending upon the module.  Observe the terminal while inputting the boundary conditions.
+   The sequence of relaxation factors should be same as the sequence of boundary conditions.
+

@@ -1,0 +1,768 @@
+#include "APKUpdateVarCD2d.h" 
+
+/**
+This is a general function unlike "findresidual" (which only solves for mass velocities).
+This function solves for any variable using Gauss-Seidal point method and returns the
+residual of that variable for that particular iteration. It is called only for 2D case in which central difference
+conevction scheme is used and having either constant or variable diffusion coefficient.
+*/
+
+double UpdateVarCD2d(Base *base,Zone *zone,int vartag)
+{
+
+	int NI,NJ,NK,index[3],INDEX,k,j,i,*ptrSize,g,cntDir;
+	double vol,AX,RS,diacoeff,residue,res=0.0,omega=0.6;
+	double delta_t,*slabVariable[6],varCoefficientPrev,source,DiagSource;
+	double Vg,V[18],*LHS,*RHS,DefCor,*CoeffN[18],*dia,*DefCoeffN[12],*Defdia,defer[4];
+	double *prevIterVar,*variable,*prevTstepVar;
+	
+	double velP;
+	
+	ptrSize= zone->Size;
+	omega = *(base->BaseParameters->OMEGA);
+	g = 0;
+	delta_t = base->BaseParameters->TimeStep;
+	dia = (zone->grid+g)->ConvDiffusionCoeffPhi_P;
+	for(i=0;i<18;i++)
+	{
+		CoeffN[i] = (zone->grid+g)->ConvDiffusionCoeffPhi_nb[i];
+	}
+	Defdia = zone->DeferredCorrCoeffPhi_P;
+	for(i=0;i<12;i++)
+	{
+		DefCoeffN[i] = zone->DeferredCorrCoeffPhi_nb[i];
+	}
+	
+	switch(vartag)
+	{
+		case 1:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabU[cntDir];
+			}
+			variable = zone->Flowsol->u;
+			prevTstepVar = zone->PrevFlowsol->u;
+			break;
+		case 2:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabV[cntDir];
+			}
+			variable = zone->Flowsol->v;
+			prevTstepVar = zone->PrevFlowsol->v;
+			break;
+		case 3:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabW[cntDir];
+			}
+			variable = zone->Flowsol->w;
+			prevTstepVar = zone->PrevFlowsol->w;
+			break;
+		case 6:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabT[cntDir];
+			}
+			variable = zone->Flowsol->T;
+			prevTstepVar = zone->PrevFlowsol->T;
+			break;
+		case 7:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->Slab_Enthalpy[cntDir];
+			}
+			variable = zone->Flowsol->enthalpy;
+			prevTstepVar = zone->PrevFlowsol->enthalpy;
+			break;
+		case 8:
+			dia = (zone->grid+g)->DiffusionCoeff_Poten;
+			for(i=0;i<18;i++)
+			{
+				CoeffN[i] = (zone->grid+g)->DiffusionCoeff_Poten_nb[i];///These coefficients are calculated seperately in SOLVERELECTRIC().  Refer this function for subsequent changes.;
+			}
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->Slab_Potential[cntDir];
+			}
+			variable = zone->Flowsol->Potential;
+			prevTstepVar = zone->PrevFlowsol->Potential;
+			omega=1.8;
+			break;
+		case 9:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->Slab_RhoIon[cntDir];
+			}
+			variable = zone->Flowsol->RhoIon;
+			prevTstepVar = zone->PrevFlowsol->RhoIon;
+			//printf("Entered for Ion Density\n");
+			omega=0.8;
+			break;
+		case 14:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabMixFrac[cntDir];
+			}
+			variable = zone->Flowsol->MixFrac;
+			prevTstepVar = zone->PrevFlowsol->MixFrac;
+			//printf("Entered for Ion Density\n");
+			//omega=0.8;
+			break;
+			
+		case 15:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabFuelFrac[cntDir];
+			}
+			variable = zone->Flowsol->FuelMassFrac;
+			prevTstepVar = zone->PrevFlowsol->FuelMassFrac;
+			//printf("Entered for Ion Density\n");
+			//omega=0.8;
+			break;
+			
+		case 600:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[0][cntDir];
+			}
+			variable = zone->Flowsol->Scal[0];
+			prevTstepVar = zone->PrevFlowsol->Scal[0];
+			
+			omega = *(base->BaseParameters->OMEGA+4);
+			delta_t = base->BaseParameters->Turb->DualTimeStep;//delta_t = delta_t/10.0;
+			break;
+		case 601:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[1][cntDir];
+			}
+			variable = zone->Flowsol->Scal[1];
+			prevTstepVar = zone->PrevFlowsol->Scal[1];
+			
+			omega = *(base->BaseParameters->OMEGA+5);
+			delta_t = base->BaseParameters->Turb->DualTimeStep;
+			break;
+		case 602:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[2][cntDir];
+			}
+			variable = zone->Flowsol->Scal[2];
+			prevTstepVar = zone->PrevFlowsol->Scal[2];
+			break;
+		case 603:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[3][cntDir];
+			}
+			variable = zone->Flowsol->Scal[3];
+			prevTstepVar = zone->PrevFlowsol->Scal[3];
+			break;
+		case 604:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[4][cntDir];
+			}
+			variable = zone->Flowsol->Scal[4];
+			prevTstepVar = zone->PrevFlowsol->Scal[4];
+			break;
+		case 605:
+
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[5][cntDir];
+			}
+			variable = zone->Flowsol->Scal[5];
+			prevTstepVar = zone->PrevFlowsol->Scal[5];
+			break;
+		case 606:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[6][cntDir];
+			}
+			variable = zone->Flowsol->Scal[6];
+			prevTstepVar = zone->PrevFlowsol->Scal[6];
+			break;
+		case 607:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[7][cntDir];
+			}
+			variable = zone->Flowsol->Scal[7];
+			prevTstepVar = zone->PrevFlowsol->Scal[7];
+			break;
+		case 608:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[8][cntDir];
+			}
+			variable = zone->Flowsol->Scal[8];
+			prevTstepVar = zone->PrevFlowsol->Scal[8];
+			break;
+		case 609:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabScalar[9][cntDir];
+			}
+			variable = zone->Flowsol->Scal[9];
+			prevTstepVar = zone->PrevFlowsol->Scal[9];
+			break;
+		//added for multiphase flow problem.
+		case 31:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVx[cntDir];
+				//printf("vartag=%d\tslabvalue[%d]=%e\n",vartag,cntDir,*slabVariable[cntDir]);
+			}
+			variable = zone->Flowsol->Momentumx;
+			prevTstepVar = zone->PrevFlowsol->Momentumx;
+		break;
+		case 32:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVy[cntDir];
+			}
+			variable = zone->Flowsol->Momentumy;
+			prevTstepVar = zone->PrevFlowsol->Momentumy;
+		break;
+		case 41:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVxPhase[0][cntDir];
+				//printf("vartag=%d\tslabvalue[%d]=%e\n",vartag,cntDir,*slabVariable[cntDir]);
+			}
+			variable = zone->Flowsol->Momentumofphasex[0];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasex[0];
+			
+		break;
+		case 44:	
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVxPhase[1][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasex[1];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasex[1];
+			
+		break;
+		case 47:	
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVxPhase[2][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasex[2];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasex[2];
+			
+		break;
+		case 50:	
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVxPhase[3][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasex[3];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasex[3];
+			
+		break;
+		case 53:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVxPhase[4][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasex[4];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasex[4];
+			
+		break;
+		case 42:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVyPhase[0][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasey[0];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasey[0];
+			
+			break;
+		case 45:	
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVyPhase[1][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasey[1];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasey[1];
+			
+		break;
+		case 48:	
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVyPhase[2][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasey[2];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasey[2];
+			
+		break;
+		case 51:	
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVyPhase[3][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasey[3];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasey[3];
+			
+		break;
+		case 54:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVyPhase[4][cntDir];
+			}
+			variable = zone->Flowsol->Momentumofphasey[4];
+			prevTstepVar = zone->PrevFlowsol->Momentumofphasey[4];
+			
+		break;
+		case 34://for volume fraction
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVartheta[0][cntDir];
+			}
+			variable = zone->Flowsol->VarthetaPhase[0];
+			prevTstepVar = zone->PrevFlowsol->VarthetaPhase[0];
+		break;
+		case 35:
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVartheta[1][cntDir];
+			}
+			variable = zone->Flowsol->VarthetaPhase[1];
+			prevTstepVar = zone->PrevFlowsol->VarthetaPhase[1];
+		break;
+		case 36:
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVartheta[2][cntDir];
+			}
+			variable = zone->Flowsol->VarthetaPhase[2];
+			prevTstepVar = zone->PrevFlowsol->VarthetaPhase[2];
+		break;
+		case 37:
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVartheta[3][cntDir];
+			}
+			variable = zone->Flowsol->VarthetaPhase[3];
+			prevTstepVar = zone->PrevFlowsol->VarthetaPhase[3];
+		break;
+		case 38:
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVartheta[4][cntDir];
+			}
+			variable = zone->Flowsol->VarthetaPhase[4];
+			prevTstepVar = zone->PrevFlowsol->VarthetaPhase[4];
+		break;
+		//added by adhi+shash for disperse phase flow//changed by mrunalini
+		case 62:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVxDisperse[cntDir];
+			}
+			
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			variable = zone->Flowsol->U_Disperse;
+			prevTstepVar = zone->PrevFlowsol->U_Disperse;
+			omega=1.0;
+			break;
+		case 63:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVyDisperse[cntDir];
+			}
+			variable = zone->Flowsol->V_Disperse;
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			prevTstepVar = zone->PrevFlowsol->V_Disperse;
+			omega=1.0;
+			break;
+		case 65:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabVarthetaDisperse[cntDir];
+			}
+			variable = zone->Flowsol->VarthetaDisperse;
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			prevTstepVar = zone->PrevFlowsol->VarthetaDisperse;
+			omega=1.0;
+			break;
+	/*	case 67:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabNumDensity[cntDir];
+			}
+			variable = zone->Flowsol->NumDensity;
+			prevTstepVar = zone->PrevFlowsol->NumDensity;
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			omega=1.0;
+			break;
+	*/
+		case 68:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+			   slabVariable[cntDir] = zone->Flowsol->SlabDropFuelMassFrac[cntDir];
+			}
+			variable = zone->Flowsol->DropFuelMassFrac;
+			prevTstepVar = zone->PrevFlowsol->DropFuelMassFrac;
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			omega=1.0;
+			break;
+		case 69:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+			   slabVariable[cntDir] = zone->Flowsol->SlabTdrop[cntDir];
+			}
+			variable = zone->Flowsol->Tdrop;
+			prevTstepVar = zone->PrevFlowsol->Tdrop;
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			omega=1.0;
+			break;
+		case 710:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->SlabDensity[cntDir];
+			}
+			variable = zone->Flowsol->Rho;
+			prevTstepVar = zone->PrevFlowsol->Rho;
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			
+			omega=1.0;
+			break;
+		case 56:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->Slab_Total_MfieldX[cntDir];
+			}
+			variable = zone->Flowsol->TotalMfieldX;
+			prevTstepVar = zone->PrevFlowsol->TotalMfieldX;
+			break;
+
+		case 57:
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->Slab_Total_MfieldY[cntDir];
+			}
+			variable = zone->Flowsol->TotalMfieldY;
+			prevTstepVar = zone->PrevFlowsol->TotalMfieldY;
+			break;
+		case 58:
+			
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->Slab_Total_MfieldZ[cntDir];
+			}
+			variable = zone->Flowsol->TotalMfieldZ;
+			prevTstepVar = zone->PrevFlowsol->TotalMfieldZ;
+			
+			break;
+		case 17:
+			dia = (zone->grid+g)->DiffusionCoeff_P;
+			for(i=0;i<18;i++)
+			{
+				CoeffN[i] = (zone->grid+g)->DiffusionCoeff_nb[i];
+			}
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->Slab_Potential_MHD[cntDir];
+			}
+			variable = zone->Flowsol->PotentialMHD;
+			Defdia = zone->DeferredCorrCoeffDummy_P;
+			for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			prevTstepVar = zone->DeferredCorrCoeffDummy_P;
+			omega=1.0;
+			break;
+                case 59:
+                        dia = (zone->grid+g)->DiffusionCoeff_P;
+	                for(i=0;i<18;i++)
+			{
+				CoeffN[i] = (zone->grid+g)->DiffusionCoeff_nb[i];
+			}
+			for(cntDir=0;cntDir<6;cntDir++)
+			{
+				slabVariable[cntDir] = zone->Flowsol->Slab_Psi_MHD[cntDir];
+			}
+			variable = zone->Flowsol->Psi;
+                	Defdia = zone->DeferredCorrCoeffDummy_P;
+                        for(i=0;i<12;i++)
+			{
+				DefCoeffN[i] = zone->DeferredCorrCoeffDummy_P;
+			}
+			prevTstepVar = zone->DeferredCorrCoeffDummy_P;//rajendra
+			omega=1.0;
+		break;
+		default:
+			printf("This vartag %d is not found in UpdateVarCD2d.c\n\n",vartag);
+			exit(12);
+			break;
+		//end	
+	}
+
+	
+	NI=*(ptrSize+0);
+	NJ=*(ptrSize+1);
+	NK=*(ptrSize+2);
+	
+	prevIterVar = zone->Flowsol->prevIterVariable;
+	
+	for(k=0;k<NK-1;k++)
+	for(j=0;j<NJ-1;j++)
+	for(i=0;i<NI-1;i++)
+	{
+		INDEX=(NJ-1)*(NI-1)*k+(NI-1)*j+i;
+		*(prevIterVar+INDEX) = *(variable+INDEX);
+	}
+	
+	
+	
+	LHS=(double *)malloc(sizeof(double));
+	RHS=(double *)malloc(sizeof(double));
+	double MULTIPLE=1.0;
+	
+	if(base->BaseParameters->TimeStepingSchemeTag == 1)
+		MULTIPLE = 0.5;
+
+	INDEX=0;
+	for(k=0;k<NK-1;k++)
+	for(j=0;j<NJ-1;j++)
+	for(i=0;i<NI-1;i++)
+	{
+		if(i!=0)
+		{
+			V[0]=*(variable+INDEX-1);
+			defer[0]=*(prevIterVar+INDEX-1);
+		}
+		else
+		{
+			V[0] =*(slabVariable[1]+j);
+			defer[0] = V[0];
+			
+		}
+		if(i!=(NI-2))
+		{
+			V[1]=*(variable+INDEX+1);
+			defer[1]=*(prevIterVar+INDEX+1);
+		}
+		else
+		{
+			V[1]= *(slabVariable[0]+j);
+			defer[1]= V[1];
+		}
+	
+		if(j!=0)
+		{
+			V[2]=*(variable+INDEX-(NI-1));
+			defer[2] = *(prevIterVar+INDEX-(NI-1));
+		}
+		else
+		{
+			V[2]=*(slabVariable[3]+i);
+			defer[2]=V[2];
+		}
+	
+		if(j!=(NJ-2))
+		{
+			V[3]=*(variable+INDEX+NI-1);
+			defer[3] =*(prevIterVar+INDEX+NI-1);
+		}
+		else
+		{
+			V[3]=*(slabVariable[2]+i);
+			defer[3] = V[3];
+		}
+	
+		if(!(i==0 && j==(NJ-2)))
+		{
+			if(i==0)
+				V[6]=*(slabVariable[1]+(j+1));//from western slab
+			else
+			{
+				if(j==(NJ-2))
+					V[6]=*(slabVariable[2]+(i-1));//from northern slab
+				else
+					V[6]=*(variable+INDEX+(NI-1)-1);
+			}
+		}
+		else
+			V[6]=0.0;
+		
+		if(!(i==0 && j==0))
+		{
+			if(i==0)
+				V[7]=*(slabVariable[1]+(j-1));//from west slab
+			else
+			{
+				if(j==0)
+					V[7]=*(slabVariable[3]+(i-1));//from southern slab
+				else
+					V[7]=*(variable+INDEX-(NI-1)-1);
+			}
+		}
+		else
+			V[7]=0.0;
+		
+		if(!(i==(NI-2) && j==(NJ-2)))
+		{
+			if(i==(NI-2))
+				V[10]=*(slabVariable[0]+(j+1));
+			else
+			{
+				if(j==(NJ-2))
+					V[10]=*(slabVariable[2]+(i+1));
+				else
+					V[10]=*(variable+INDEX+(NI-1)+1);
+			}
+		}
+		else
+			V[10]=0.0;
+		
+		if(!(i==(NI-2) && j==0))
+		{
+			if(i==(NI-2))
+				V[11]=*(slabVariable[0]+(j-1));
+			else
+			{	
+				if(j==0)
+					V[11]=*(slabVariable[3]+(i+1));
+				else
+					V[11]=*(variable+INDEX-(NI-1)+1);
+			}
+		}
+		else
+			V[11]=0.0;
+		
+		vol = *(zone->ZGeom->Volume+INDEX);
+		velP=*(prevTstepVar+INDEX);
+		
+		Vg = *(variable+INDEX);
+
+		varCoefficientPrev = CalcvarCoefficientPrev(base,zone,vartag,INDEX);
+		
+		index[0]=k;index[1]=j;index[2]=i;
+
+		source = *(zone->Flowsol->Source_term+INDEX);
+		DiagSource = *(zone->Flowsol->Diag_Source+INDEX);
+		source = source - DiagSource*Vg;
+		
+		*LHS = *(dia+INDEX)*Vg;
+		
+		
+		*RHS = *(CoeffN[0]+INDEX) *V[0] + *(CoeffN[1]+INDEX) *V[1] + *(CoeffN[2]+INDEX) *V[2] +*(CoeffN[3]+INDEX) *V[3] + *(CoeffN[6]+INDEX) *V[6] + *(CoeffN[7]+INDEX) *V[7] + *(CoeffN[10]+INDEX) *V[10]+*(CoeffN[11]+INDEX) *V[11];
+		
+		
+		AX = *LHS + *RHS;
+		
+		DefCor = (*(Defdia+INDEX))*(*(prevIterVar+INDEX)) + (*(DefCoeffN[0]+INDEX))*defer[0]+ (*(DefCoeffN[1]+INDEX))*defer[1]+ (*(DefCoeffN[2]+INDEX))*defer[2]+ (*(DefCoeffN[3]+INDEX))*defer[3];
+		
+		
+		if(vartag!=17)
+			RS = delta_t*source + varCoefficientPrev*vol*velP - DefCor*MULTIPLE*varCoefficientPrev;
+		else
+			RS = source;
+		
+		residue = RS-AX;
+		//printf("\n RS=%e$$AX=%e",RS,AX);
+		diacoeff = *(dia + INDEX) + delta_t*DiagSource;
+		
+		*(variable+INDEX)= *(variable+INDEX)+(omega*residue)/diacoeff;
+// 		if(vartag==31)
+// 		{
+// 			printf("\n %d %d %d",k,j,i);
+// 			printf("\n *(variable+INDEX)=%lf",*(variable+INDEX));
+// 		}
+		res=res+(residue*residue);
+		
+		if(vartag==9 && ((*(variable+INDEX)) < 0.0))
+			*(variable+INDEX) = 0.0;
+		INDEX++;
+	}
+	free(LHS);
+	free(RHS);
+	
+	return(res);
+}
+
+
+
