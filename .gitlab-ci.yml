@@ -1,0 +1,62 @@
+# GitLab CI/CD pipeline for Anupravaha-I.
+#
+# Today: builds the solver on every push to a MR branch and on every push to main.
+# Planned: a "smoke-test" job that runs the fastest regression case once tests/<case>/
+#          ships an `.inp` file. See tests/README.md.
+
+image: ubuntu:22.04
+
+stages:
+  - build
+  # - test       # uncomment once tests/<case>/ exists
+
+variables:
+  DEBIAN_FRONTEND: noninteractive
+  # Cache apt + cmake configure so reruns are fast
+  CMAKE_BUILD_PARALLEL_LEVEL: "4"
+
+cache:
+  key: apt-cache
+  paths:
+    - .apt-cache
+
+before_script:
+  - mkdir -p .apt-cache
+  - apt-get update -qq
+  - apt-get install -y -qq --no-install-recommends -o dir::cache::archives=".apt-cache"
+      build-essential cmake gfortran libcgns-dev libhdf5-dev git ca-certificates
+
+build:
+  stage: build
+  script:
+    - mkdir -p build && cd build
+    - cmake ..
+    - make -j${CMAKE_BUILD_PARALLEL_LEVEL}
+    # Sanity: the executable should exist, link cleanly, and print the usage banner
+    - test -x bin/Anupravaha_1
+    - test -f bin/libAPK.so
+    - ./bin/Anupravaha_1 < /dev/null 2>&1 | head -n 5
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build/bin/Anupravaha_1
+      - build/bin/libAPK.so
+    expire_in: 2 weeks
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# ----------------------------------------------------------------------------
+# Placeholder smoke-test job — uncomment once `tests/lid-driven-cavity/`
+# contains a mesh + .inp pair and a comparator script.
+#
+# smoke-test:
+#   stage: test
+#   needs: [build]
+#   script:
+#     - cd tests/lid-driven-cavity
+#     - ../../build/bin/Anupravaha_1 Lid_Driven_Square_Cavity_Mesh.cgns sol.cgns < lid-driven-cavity.inp
+#     - python3 ../compare.py sol.cgns reference/
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

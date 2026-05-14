@@ -1,5 +1,9 @@
 # Anupravaha-I
 
+[![pipeline status](https://gitlab.com/anupravahaone/anupravaha_1_dev/badges/main/pipeline.svg)](https://gitlab.com/anupravahaone/anupravaha_1_dev/-/commits/main)
+[![contributors](https://img.shields.io/gitlab/contributors/anupravahaone/anupravaha_1_dev)](https://gitlab.com/anupravahaone/anupravaha_1_dev/-/graphs/main)
+[![license: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](LICENSE)
+
 Educational, structured multi-block, finite-volume Navier–Stokes solver developed at the Indian Institute of Technology Kanpur. Anupravaha-I covers incompressible and weakly-compressible flow, conjugate heat transfer, turbulence (k–ε, RNG k–ε, k–ω, SST), natural and mixed convection, and liquid-metal MHD.
 
 The 2018 release in this repository is a frozen reference implementation, used in graduate-level CFD coursework and as a teaching companion to the printed manual.
