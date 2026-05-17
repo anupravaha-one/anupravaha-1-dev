@@ -8,7 +8,7 @@ Educational, structured multi-block, finite-volume Navier–Stokes solver develo
 
 The 2018 release in this repository is a frozen reference implementation, used in graduate-level CFD coursework and as a teaching companion to the printed manual.
 
-**Full documentation, theory, and 20+ worked tutorials live on the project website:** https://vatsalyasharma.gitlab.io/Anupravaha_1
+**Full documentation, theory, and 20+ worked tutorials live on the project website:** https://anupravahaone.gitlab.io/
 
 ## Layout
 
@@ -41,7 +41,7 @@ cmake ..
 make -j
 ```
 
-The executable lands under `build/bin/`. See the [Tutorials](https://vatsalyasharma.gitlab.io/Anupravaha_1/tutorials/) for end-to-end runs.
+The executable lands under `build/bin/`. See the [Tutorials](https://anupravahaone.gitlab.io/tutorials/) for end-to-end runs.
 
 ## Running
 
