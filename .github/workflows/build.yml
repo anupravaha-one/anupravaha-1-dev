@@ -47,6 +47,33 @@ jobs:
             build/bin/libAPK.so
           retention-days: 14
 
+  # Newest Ubuntu toolchain (GCC 15+, recent CMake), so compiler changes such as
+  # GCC 15's switch to C23 show up here before students hit them.
+  build-latest:
+    name: Build on latest Ubuntu (newest GCC/CMake)
+    runs-on: ubuntu-latest
+    container: ubuntu:rolling
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            build-essential cmake gfortran libcgns-dev libhdf5-dev
+          gcc --version | head -1
+          cmake --version | head -1
+
+      - name: Configure and build
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          make -j$(nproc)
+          test -x bin/Anupravaha_1
+
   # Placeholder regression-test job — activate once tests/<case>/ ships an .inp.
   #
   # smoke-test:

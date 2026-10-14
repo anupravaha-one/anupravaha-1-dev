@@ -29,8 +29,8 @@ The 2018 release in this repository is a frozen reference implementation, used i
 
 Requirements:
 
-- CMake ≥ 2.6
-- A C compiler (GCC, Clang, MSVC)
+- CMake ≥ 3.10 (CMake 4.x works)
+- A C compiler (GCC, Clang, MSVC); GCC 15 and newer are supported
 - The CGNS library — https://cgns.github.io
 
 Out-of-source build:

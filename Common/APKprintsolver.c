@@ -1,4 +1,5 @@
 #include "APKprintsolver.h"
+#include "../Geometry/APKFindCellCentre.h"
 /**
 This function,printsolver() prints the centroid values of the required variable into a data file, which goes into 'SOLUTIONS' 
 folder. To this any other variable you wish to print into a data file can be added. 
@@ -29,7 +30,6 @@ int printsolver(Base *CgnsBase)
 	double *coordX,*coordY,*coordZ,time;//,yPlus,utau;
 	double *ptrPoint1X,*ptrPoint1Y,*ptrPoint1Z,centroid[3];
 
-	int FindCellCentre();
 	time = CgnsBase->BaseParameters->Time;
 	num = time;	
 	nZones=((CgnsBase)->Number_of_zones);
