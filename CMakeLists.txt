@@ -1,5 +1,10 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 PROJECT(APK)
+
+# The sources are pre-C23 C (e.g. old-style "int f();" declarations), which GCC 15+
+# rejects under its default gnu23 standard. Pin the dialect explicitly.
+SET(CMAKE_C_STANDARD 11)
+SET(CMAKE_C_EXTENSIONS ON)
 INCLUDE_REGULAR_EXPRESSION("^(lex|APK|png|j).*$")
 
 # Don't build anything unless the version of CMake is high enough.
@@ -23,7 +28,7 @@ SET(APK_EXECUTABLE_DIR ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR})
 SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 if(COMMAND cmake_policy)
-      cmake_policy(SET CMP0015 OLD)
+      cmake_policy(SET CMP0015 NEW)
 endif(COMMAND cmake_policy)
 
 # The Cygwin maintainers have requested that we not define WIN32. Thus developers
@@ -769,7 +774,7 @@ IF (WIN32)
 ENDIF (WIN32)
 
 if(COMMAND cmake_policy)
-      cmake_policy(SET CMP0003 OLD)
+      cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
 IF (WIN32)
