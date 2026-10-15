@@ -37,8 +37,8 @@ int WriteCgnsFile(char* CgnsFileName,Root CgnsRoot)
 	GridLocation_t location=3,locab=4;
 	int sol_index,solarr_index,scal_ind,scalCoeff_ind;
 	char floname[]="Solutions";
-	char s1[]="Scalar1";
-	char s2[]="Scalar2";
+	char s1[33]="Scalar1"; //sized for CGNS names (32 chars): renamed to TKE/ModEddyVisc below
+	char s2[33]="Scalar2"; //renamed to Omega/Epsilon below
 	char s3[]="Scalar3";
 	char s4[]="Scalar4";
 	char s5[]="Scalar5";

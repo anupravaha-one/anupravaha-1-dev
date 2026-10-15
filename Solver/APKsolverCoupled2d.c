@@ -28,7 +28,7 @@ int solverCoupled2d(Root CgnsRoot)
 	char filename2[] = "SOLUTIONS/restart.cgns";
 	int timeStepToken,insideTimeStepConverToken,variableIterTag,velocityIterTag,cntVariable,massVelocityIterTag,stop;
 	double massVelocityResidual[3],velocityResidual[3],variableResidual[11];
-	double ErrorTimeStepCoupled[16],ErrorTimeStep[16];
+	double ErrorTimeStepCoupled[27],ErrorTimeStep[27];
 	double residMassFlux;
 	
 	Q=fopen("SOLUTIONS/MassConservation.dat","w");
@@ -88,7 +88,7 @@ int solverCoupled2d(Root CgnsRoot)
 			
 			do/*iterates till everything converges inside the time loop*/
 			{
-				for(cntVar=0;cntVar<16;cntVar++)
+				for(cntVar=0;cntVar<27;cntVar++)
 					ErrorTimeStepCoupled[cntVar]=ErrorTimeStep[cntVar];
 	
 				do/*mass flux loop*/
@@ -207,7 +207,7 @@ int solverCoupled2d(Root CgnsRoot)
 		{
 			do/*iterates till everything converges inside the time loop*/
 			{
-				for(cntVar=0;cntVar<16;cntVar++)
+				for(cntVar=0;cntVar<27;cntVar++)
 					ErrorTimeStepCoupled[cntVar]=ErrorTimeStep[cntVar];
 
 				if(CounterTstep>1)

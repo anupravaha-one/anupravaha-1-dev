@@ -28,9 +28,9 @@ int solverSemiCoupled(Root CgnsRoot)
     char filename2[] = "SOLUTIONS/restart.cgns"; //This value is last somewhere while calling stop - needed to re-assign later
     int timeStepToken,variableIterTag,cntVariable,stop=1;
     double variableResidual[11];
-    double ErrorTimeStep[22]; //Increased the size to 16, to accomodate two combustion variables, Shyam
+    double ErrorTimeStep[27]; //Increased the size to 16, to accomodate two combustion variables, Shyam
     //adhi+shash
-    //Increased the size to 21 to accomodate the disperse phase variables//22 by shash
+    //Increased the size to 21 to accomodate the disperse phase variables//22 by shash//27 to match FindTimeStepErrorArray(), which fills indices 0-26
     double residMassFlux;
     int tempTurbTag=0, changeTimeStepTag=0;
     double turbTime=0.0,r=1.0,dummyViscosity=0.0;
